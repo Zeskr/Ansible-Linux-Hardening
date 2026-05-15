@@ -1,0 +1,80 @@
+---
+- name: Enterprise Linux Server Hardening Baseline
+  hosts: all
+  become: yes
+  tasks:
+    - name: Update and upgrade system packages
+      apt:
+        upgrade: yes
+        update_cache: yes
+        cache_valid_time: 86400
+
+    - name: Configure UFW default deny incoming
+      ufw:
+        default: deny
+        direction: incoming
+
+    - name: Configure UFW default allow outgoing
+      ufw:
+        default: allow
+        direction: outgoing
+
+    - name: Allow SSH on custom port 2222
+      ufw:
+        rule: allow
+        port: '2222'
+        proto: tcp
+
+    - name: Enable UFW firewall on system startup
+      ufw:
+        state: enabled
+
+    - name: Backup existing sshd_config
+      copy:
+        src: /etc/ssh/sshd_config
+        dest: /etc/ssh/sshd_config.bak
+        remote_src: yes
+
+    - name: Configure SSH daemon to listen on port 2222
+      lineinfile:
+        path: /etc/ssh/sshd_config
+        regexp: '^#?Port 22'
+        line: 'Port 2222'
+        state: present
+
+    - name: Disable systemd ssh.socket to enforce custom port config
+      systemd:
+        name: ssh.socket
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+
+    - name: Enable and restart standard SSH service
+      systemd:
+        name: ssh
+        state: restarted
+        enabled: yes
+
+    - name: Harden kernel network parameters (Enable TCP Syncookies)
+      sysctl:
+        name: net.ipv4.tcp_syncookies
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
+
+    - name: Disable IPv6 (all interfaces)
+      sysctl:
+        name: net.ipv6.conf.all.disable_ipv6
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
+
+    - name: Disable IPv6 (default interfaces)
+      sysctl:
+        name: net.ipv6.conf.default.disable_ipv6
+        value: '1'
+        state: present
+        sysctl_set: yes
+        reload: yes
