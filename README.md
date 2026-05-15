@@ -1,7 +1,7 @@
 # ⚙️ Infrastructure as Code (IaC): Ansible Linux Hardening
 
 ## Overview
-An enterprise-grade Ansible Playbook designed to programmatically deploy baseline security configurations across Ubuntu/Debian server fleets. By transitioning from sequential Bash scripting to declarative Infrastructure as Code (IaC), this deployment ensures idempotency, minimizes configuration drift, and scales securely to thousands of nodes simultaneously.
+An Ansible Playbook designed to programmatically deploy baseline security configurations across Ubuntu/Debian server fleets. By transitioning from sequential Bash scripting to declarative Infrastructure as Code (IaC), this deployment ensures idempotency, minimizes configuration drift, and scales securely to thousands of nodes simultaneously.
 
 ## Technical Skills Applied
 * **Infrastructure as Code (IaC):** Writing idempotent YAML playbooks utilizing native Ansible modules (`apt`, `ufw`, `sysctl`, `systemd`, `lineinfile`).
